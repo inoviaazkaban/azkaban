@@ -25,6 +25,8 @@ azkaban.SchedulePanelView = Backbone.View.extend({
   initialize: function(settings) {
     $("#timepicker").datetimepicker({pickDate: false, use24hours: true});
     $("#datepicker").datetimepicker({pickTime: false, use24hours: true});
+    $("#stoptimepicker").datetimepicker({pickDate: false, use24hours: true});
+    $("#stopdatepicker").datetimepicker({pickTime: false, use24hours: true});
   },
 
   render: function() {
@@ -39,14 +41,6 @@ azkaban.SchedulePanelView = Backbone.View.extend({
   },
 
   scheduleFlow: function() {
-    var timeVal = $('#timepicker').val();
-    var timezoneVal = $('#timezone').val();
-
-    var dateVal = $('#datepicker').val();
-
-    var is_recurringVal = $('#is_recurring').val();
-    var periodVal = $('#period').val();
-    var periodUnits = $('#period_units').val();
 
     var scheduleURL = contextURL + "/schedule"
     var scheduleData = flowExecuteDialogView.getExecutionOptionData();
@@ -54,13 +48,21 @@ azkaban.SchedulePanelView = Backbone.View.extend({
     console.log("Creating schedule for " + projectName + "." +
         scheduleData.flow);
 
-    var scheduleTime = moment(timeVal, 'h/mm A').format('h,mm,A,') + timezoneVal;
+    var scheduleTime = moment($('#timepicker').val(), 'h/mm A').format('h,mm,A,') + $('#timezone').val();
     console.log(scheduleTime);
 
     var scheduleDate = $('#datepicker').val();
     var is_recurring = document.getElementById('is_recurring').checked
         ? 'on' : 'off';
     var period = $('#period').val() + $('#period_units').val();
+    
+    var doesStop = document.getElementById('does_stop').checked ? 'on' : 'off';
+    
+    var	stopScheduleTime = moment($("#stoptimepicker").val(), 'h/mm A').format('h,mm,A,') 
+                       + $('#stoptimezone').val();
+    console.log(stopScheduleTime);
+    
+    var stopScheduleDate = $("#stopdatepicker").val();
 
     scheduleData.ajax = "scheduleFlow";
     scheduleData.projectName = projectName;
@@ -68,6 +70,9 @@ azkaban.SchedulePanelView = Backbone.View.extend({
     scheduleData.scheduleDate = scheduleDate;
     scheduleData.is_recurring = is_recurring;
     scheduleData.period = period;
+    scheduleData.doesStop = doesStop;
+    scheduleData.stopScheduleTime = stopScheduleTime;
+    scheduleData.stopScheduleDate = stopScheduleDate;
 
     var successHandler = function(data) {
       if (data.error) {
