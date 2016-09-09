@@ -46,6 +46,7 @@ public class Schedule {
   private String projectName;
   private String flowName;
   private long firstSchedTime;
+  private long lastSchedTime;
   private DateTimeZone timezone;
   private long lastModifyTime;
   private ReadablePeriod period;
@@ -58,13 +59,14 @@ public class Schedule {
   private SlaOptions slaOptions;
 
   public Schedule(int projectId, String projectName, String flowName,
-      String status, long firstSchedTime, DateTimeZone timezone,
+      String status, long firstSchedTime, long lastSchedTime, DateTimeZone timezone,
       ReadablePeriod period, long lastModifyTime, long nextExecTime,
       long submitTime, String submitUser) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.flowName = flowName;
     this.firstSchedTime = firstSchedTime;
+    this.lastSchedTime = lastSchedTime;
     this.timezone = timezone;
     this.lastModifyTime = lastModifyTime;
     this.period = period;
@@ -77,7 +79,7 @@ public class Schedule {
   }
 
   public Schedule(int projectId, String projectName, String flowName,
-      String status, long firstSchedTime, String timezoneId, String period,
+      String status, long firstSchedTime, long lastSchedTime, String timezoneId, String period,
       long lastModifyTime, long nextExecTime, long submitTime,
       String submitUser, ExecutionOptions executionOptions,
       SlaOptions slaOptions) {
@@ -85,6 +87,7 @@ public class Schedule {
     this.projectName = projectName;
     this.flowName = flowName;
     this.firstSchedTime = firstSchedTime;
+    this.lastSchedTime = lastSchedTime;
     this.timezone = DateTimeZone.forID(timezoneId);
     this.lastModifyTime = lastModifyTime;
     this.period = parsePeriodString(period);
@@ -97,7 +100,7 @@ public class Schedule {
   }
 
   public Schedule(int projectId, String projectName, String flowName,
-      String status, long firstSchedTime, DateTimeZone timezone,
+      String status, long firstSchedTime, long lastSchedTime, DateTimeZone timezone,
       ReadablePeriod period, long lastModifyTime, long nextExecTime,
       long submitTime, String submitUser, ExecutionOptions executionOptions,
       SlaOptions slaOptions) {
@@ -105,6 +108,7 @@ public class Schedule {
     this.projectName = projectName;
     this.flowName = flowName;
     this.firstSchedTime = firstSchedTime;
+    this.lastSchedTime = lastSchedTime;
     this.timezone = timezone;
     this.lastModifyTime = lastModifyTime;
     this.period = period;
@@ -141,7 +145,9 @@ public class Schedule {
         + " to be run at (starting) "
         + new DateTime(firstSchedTime).toDateTimeISO()
         + " with recurring period of "
-        + (period == null ? "non-recurring" : createPeriodString(period));
+        + (period == null ? "non-recurring" : createPeriodString(period))
+        + " ending at "
+        + new DateTime(lastSchedTime).toDateTimeISO();
   }
 
   public Pair<Integer, String> getScheduleId() {
@@ -162,6 +168,10 @@ public class Schedule {
 
   public long getFirstSchedTime() {
     return firstSchedTime;
+  }
+  
+  public long getLastSchedTime() {
+    return lastSchedTime;
   }
 
   public DateTimeZone getTimezone() {

@@ -39,6 +39,7 @@ import azkaban.trigger.TriggerAction;
 import azkaban.trigger.TriggerLoader;
 import azkaban.trigger.builtin.BasicTimeChecker;
 import azkaban.trigger.builtin.ExecuteFlowAction;
+import azkaban.trigger.builtin.ExpireChecker;
 import azkaban.utils.JSONUtils;
 import azkaban.utils.Props;
 import azkaban.utils.Utils;
@@ -132,6 +133,7 @@ public class Schedule2Trigger {
     props.put("period", azkaban.migration.scheduler.Schedule
         .createPeriodString(sched.getPeriod()));
     props.put("firstScheduleTimeLong", sched.getFirstSchedTime());
+    props.put("lastScheduleTimeLong", sched.getLastSchedTime());
     props.put("timezone", sched.getTimezone().getID());
     props.put("submitUser", sched.getSubmitUser());
     props.put("submitTimeLong", sched.getSubmitTime());
@@ -205,6 +207,7 @@ public class Schedule2Trigger {
         String projectName = schedProps.getString("projectName");
         int projectId = schedProps.getInt("projectId");
         long firstSchedTimeLong = schedProps.getLong("firstScheduleTimeLong");
+        long lastSchedTimeLong = schedProps.getLong("lastScheduleTimeLong");
         // DateTime firstSchedTime = new DateTime(firstSchedTimeLong);
         String timezoneId = schedProps.getString("timezone");
         DateTimeZone timezone = DateTimeZone.forID(timezoneId);
@@ -244,9 +247,9 @@ public class Schedule2Trigger {
 
         azkaban.scheduler.Schedule schedule =
             new azkaban.scheduler.Schedule(-1, projectId, projectName,
-                flowName, "ready", firstSchedTimeLong, timezone, period,
-                DateTime.now().getMillis(), nextExecTimeLong, submitTimeLong,
-                submitUser, executionOptions, slaOptions);
+                flowName, "ready", firstSchedTimeLong, lastSchedTimeLong, 
+                timezone, period, DateTime.now().getMillis(), nextExecTimeLong, 
+                submitTimeLong, submitUser, executionOptions, slaOptions);
         Trigger t = scheduleToTrigger(schedule);
         logger.info("Ready to insert trigger " + t.getDescription());
         triggerLoader.addTrigger(t);
@@ -303,9 +306,7 @@ public class Schedule2Trigger {
     Map<String, ConditionChecker> checkers =
         new HashMap<String, ConditionChecker>();
     ConditionChecker checker =
-        new BasicTimeChecker("BasicTimeChecker_2", s.getFirstSchedTime(),
-            s.getTimezone(), s.isRecurring(), s.skipPastOccurrences(),
-            s.getPeriod());
+        new ExpireChecker("ExpireChecker_1", s.getLastSchedTime());
     checkers.put(checker.getId(), checker);
     String expr = checker.getId() + ".eval()";
     Condition cond = new Condition(checkers, expr);

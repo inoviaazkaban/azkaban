@@ -335,6 +335,7 @@ public class JdbcScheduleLoader implements ScheduleLoader {
         String flowName = rs.getString(3);
         String status = rs.getString(4);
         long firstSchedTime = rs.getLong(5);
+        long lastSchedTime = rs.getLong(5);
         DateTimeZone timezone = DateTimeZone.forID(rs.getString(6));
         ReadablePeriod period = Schedule.parsePeriodString(rs.getString(7));
         long lastModifyTime = rs.getLong(8);
@@ -367,7 +368,7 @@ public class JdbcScheduleLoader implements ScheduleLoader {
 
         Schedule s =
             new Schedule(projectId, projectName, flowName, status,
-                firstSchedTime, timezone, period, lastModifyTime, nextExecTime,
+                firstSchedTime, lastSchedTime, timezone, period, lastModifyTime, nextExecTime,
                 submitTime, submitUser);
         if (optsObj != null) {
           s.createAndSetScheduleOptions(optsObj);

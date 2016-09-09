@@ -77,6 +77,7 @@ import azkaban.trigger.builtin.BasicTimeChecker;
 import azkaban.trigger.builtin.CreateTriggerAction;
 import azkaban.trigger.builtin.ExecuteFlowAction;
 import azkaban.trigger.builtin.ExecutionChecker;
+import azkaban.trigger.builtin.ExpireChecker;
 import azkaban.trigger.builtin.KillExecutionAction;
 import azkaban.trigger.builtin.SlaAlertAction;
 import azkaban.trigger.builtin.SlaChecker;
@@ -294,6 +295,8 @@ public class AzkabanWebServer extends AzkabanServer {
     }
     triggerManager.registerCheckerType(BasicTimeChecker.type,
         BasicTimeChecker.class);
+    triggerManager.registerCheckerType(ExpireChecker.type,
+    		ExpireChecker.class);
     triggerManager.registerCheckerType(SlaChecker.type, SlaChecker.class);
     triggerManager.registerCheckerType(ExecutionChecker.type,
         ExecutionChecker.class);

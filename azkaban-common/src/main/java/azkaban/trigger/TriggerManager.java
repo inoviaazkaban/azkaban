@@ -285,10 +285,10 @@ public class TriggerManager extends EventHandler implements
             logger.info("Checking trigger " + t.getTriggerId());
           }
           if (t.getStatus().equals(TriggerStatus.READY)) {
-            if (t.triggerConditionMet()) {
-              onTriggerTrigger(t);
-            } else if (t.expireConditionMet()) {
-              onTriggerExpire(t);
+            if(t.expireConditionMet()) {
+            	onTriggerExpire(t);
+            } else if(t.triggerConditionMet()) {
+                onTriggerTrigger(t);
             }
           }
           if (t.getStatus().equals(TriggerStatus.EXPIRED) && t.getSource().equals("azkaban")) {
@@ -342,12 +342,7 @@ public class TriggerManager extends EventHandler implements
               th);
         }
       }
-      if (t.isResetOnExpire()) {
-        t.resetTriggerConditions();
-        t.resetExpireCondition();
-      } else {
-        t.setStatus(TriggerStatus.EXPIRED);
-      }
+      t.setStatus(TriggerStatus.EXPIRED);
       try {
         triggerLoader.updateTrigger(t);
       } catch (TriggerLoaderException e) {

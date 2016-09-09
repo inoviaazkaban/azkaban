@@ -32,6 +32,7 @@ import azkaban.trigger.TriggerManagerAdapter;
 import azkaban.trigger.TriggerManagerException;
 import azkaban.trigger.builtin.BasicTimeChecker;
 import azkaban.trigger.builtin.ExecuteFlowAction;
+import azkaban.trigger.builtin.ExpireChecker;
 
 public class TriggerBasedScheduleLoader implements ScheduleLoader {
 
@@ -95,9 +96,7 @@ public class TriggerBasedScheduleLoader implements ScheduleLoader {
     Map<String, ConditionChecker> checkers =
         new HashMap<String, ConditionChecker>();
     ConditionChecker checker =
-        new BasicTimeChecker("BasicTimeChecker_2", s.getFirstSchedTime(),
-            s.getTimezone(), s.isRecurring(), s.skipPastOccurrences(),
-            s.getPeriod());
+        new ExpireChecker("ExpireChecker_1", s.getLastSchedTime());
     checkers.put(checker.getId(), checker);
     String expr = checker.getId() + ".eval()";
     Condition cond = new Condition(checkers, expr);
@@ -152,6 +151,17 @@ public class TriggerBasedScheduleLoader implements ScheduleLoader {
         break;
       }
     }
+    
+    Condition expireCond = t.getExpireCondition();
+    Map<String, ConditionChecker> expireCheckers = expireCond.getCheckers();
+    ExpireChecker ec = null;
+    for (ConditionChecker checker : expireCheckers.values()) {
+      if (checker.getType().equals(ExpireChecker.type)) {
+        ec = (ExpireChecker) checker;
+        break;
+      }
+    }
+    
     List<TriggerAction> actions = t.getActions();
     ExecuteFlowAction act = null;
     for (TriggerAction action : actions) {
@@ -160,11 +170,11 @@ public class TriggerBasedScheduleLoader implements ScheduleLoader {
         break;
       }
     }
-    if (ck != null && act != null) {
+    if (ck != null && ec != null && act != null) {
       Schedule s =
           new Schedule(t.getTriggerId(), act.getProjectId(),
               act.getProjectName(), act.getFlowName(),
-              t.getStatus().toString(), ck.getFirstCheckTime(),
+              t.getStatus().toString(), ck.getFirstCheckTime(), ec.getNextCheckTime(),
               ck.getTimeZone(), ck.getPeriod(), t.getLastModifyTime(),
               ck.getNextCheckTime(), t.getSubmitTime(), t.getSubmitUser(),
               act.getExecutionOptions(), act.getSlaOptions());
@@ -212,5 +222,4 @@ public class TriggerBasedScheduleLoader implements ScheduleLoader {
     }
     return schedules;
   }
-
 }

@@ -656,7 +656,22 @@ public class ScheduleServlet extends LoginAbstractAzkabanServlet {
     } catch (Exception e) {
       ret.put("error", e.getMessage());
     }
-
+    
+    String stopScheduleTime = null, stopScheduleDate = null;
+    DateTime lastSchedTime = parseDateTime("12/31/2100","12,59,PM,+02:00");
+    if (hasParam(req, "doesStop")
+	            && getParam(req, "doesStop").equals("on")) {
+    	stopScheduleTime = getParam(req, "stopScheduleTime");
+    	stopScheduleDate = getParam(req, "stopScheduleDate");
+	    try {
+	    	lastSchedTime = parseDateTime(stopScheduleDate, stopScheduleTime);
+	    } catch (Exception e) {
+	      ret.put("error", "Invalid date and/or time '" + stopScheduleDate + " "
+	          + stopScheduleTime);
+	      return;
+	    }
+	}
+    
     ExecutionOptions flowOptions = null;
     try {
       flowOptions = HttpRequestUtils.parseFlowOptions(req);
@@ -669,10 +684,10 @@ public class ScheduleServlet extends LoginAbstractAzkabanServlet {
 
     Schedule schedule =
         scheduleManager.scheduleFlow(-1, projectId, projectName, flowName,
-            "ready", firstSchedTime.getMillis(), firstSchedTime.getZone(),
-            thePeriod, DateTime.now().getMillis(), firstSchedTime.getMillis(),
-            firstSchedTime.getMillis(), user.getUserId(), flowOptions,
-            slaOptions);
+            "ready", firstSchedTime.getMillis(), lastSchedTime.getMillis(), 
+            firstSchedTime.getZone(), thePeriod, DateTime.now().getMillis(), 
+            firstSchedTime.getMillis(), firstSchedTime.getMillis(), 
+            user.getUserId(), flowOptions, slaOptions);
     logger.info("User '" + user.getUserId() + "' has scheduled " + "["
         + projectName + flowName + " (" + projectId + ")" + "].");
     projectManager.postProjectEvent(project, EventType.SCHEDULE,

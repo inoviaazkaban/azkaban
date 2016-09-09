@@ -187,28 +187,28 @@ public class ScheduleManager implements TriggerAgent {
 
   public Schedule scheduleFlow(final int scheduleId, final int projectId,
       final String projectName, final String flowName, final String status,
-      final long firstSchedTime, final DateTimeZone timezone,
-      final ReadablePeriod period, final long lastModifyTime,
+      final long firstSchedTime, final long lastSchedTime, final DateTimeZone
+      timezone, final ReadablePeriod period, final long lastModifyTime,
       final long nextExecTime, final long submitTime, final String submitUser) {
     return scheduleFlow(scheduleId, projectId, projectName, flowName, status,
-        firstSchedTime, timezone, period, lastModifyTime, nextExecTime,
-        submitTime, submitUser, null, null);
+        firstSchedTime, lastSchedTime, timezone, period, lastModifyTime, 
+        nextExecTime, submitTime, submitUser, null, null);
   }
 
   public Schedule scheduleFlow(final int scheduleId, final int projectId,
       final String projectName, final String flowName, final String status,
-      final long firstSchedTime, final DateTimeZone timezone,
-      final ReadablePeriod period, final long lastModifyTime,
-      final long nextExecTime, final long submitTime, final String submitUser,
+      final long firstSchedTime, final long lastSchedTime, final DateTimeZone 
+      timezone, final ReadablePeriod period, final long lastModifyTime, final 
+      long nextExecTime, final long submitTime, final String submitUser,
       ExecutionOptions execOptions, List<SlaOption> slaOptions) {
     Schedule sched =
         new Schedule(scheduleId, projectId, projectName, flowName, status,
-            firstSchedTime, timezone, period, lastModifyTime, nextExecTime,
-            submitTime, submitUser, execOptions, slaOptions);
+            firstSchedTime, lastSchedTime, timezone, period, lastModifyTime, 
+            nextExecTime, submitTime, submitUser, execOptions, slaOptions);
     logger
         .info("Scheduling flow '" + sched.getScheduleName() + "' for "
             + _dateFormat.print(firstSchedTime) + " with a period of " + period == null ? "(non-recurring)"
-            : period);
+            : period + " ending at " + _dateFormat.print(lastSchedTime));
 
     insertSchedule(sched);
     return sched;

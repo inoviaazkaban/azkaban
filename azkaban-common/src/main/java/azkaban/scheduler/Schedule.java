@@ -43,6 +43,7 @@ public class Schedule {
   private String projectName;
   private String flowName;
   private long firstSchedTime;
+  private long lastSchedTime;
   private DateTimeZone timezone;
   private long lastModifyTime;
   private ReadablePeriod period;
@@ -57,28 +58,28 @@ public class Schedule {
   private List<SlaOption> slaOptions;
 
   public Schedule(int scheduleId, int projectId, String projectName,
-      String flowName, String status, long firstSchedTime,
+      String flowName, String status, long firstSchedTime, long lastSchedTime,
       DateTimeZone timezone, ReadablePeriod period, long lastModifyTime,
       long nextExecTime, long submitTime, String submitUser) {
 
     this(scheduleId, projectId, projectName, flowName, status, firstSchedTime,
-        timezone, period, lastModifyTime, nextExecTime, submitTime, submitUser,
-        null, null);
+    	lastSchedTime, timezone, period, lastModifyTime, nextExecTime, submitTime, 
+    	submitUser, null, null);
   }
 
   public Schedule(int scheduleId, int projectId, String projectName,
-      String flowName, String status, long firstSchedTime, String timezoneId,
-      String period, long lastModifyTime, long nextExecTime, long submitTime,
-      String submitUser, ExecutionOptions executionOptions,
+      String flowName, String status, long firstSchedTime, long lastSchedTime,
+      String timezoneId, String period, long lastModifyTime, long nextExecTime, 
+      long submitTime, String submitUser, ExecutionOptions executionOptions,
       List<SlaOption> slaOptions) {
     this(scheduleId, projectId, projectName, flowName, status, firstSchedTime,
-        DateTimeZone.forID(timezoneId), parsePeriodString(period),
+        lastSchedTime, DateTimeZone.forID(timezoneId), parsePeriodString(period),
         lastModifyTime, nextExecTime, submitTime, submitUser, executionOptions,
         slaOptions);
   }
 
   public Schedule(int scheduleId, int projectId, String projectName,
-      String flowName, String status, long firstSchedTime,
+      String flowName, String status, long firstSchedTime, long lastSchedTime,
       DateTimeZone timezone, ReadablePeriod period, long lastModifyTime,
       long nextExecTime, long submitTime, String submitUser,
       ExecutionOptions executionOptions, List<SlaOption> slaOptions) {
@@ -87,6 +88,7 @@ public class Schedule {
     this.projectName = projectName;
     this.flowName = flowName;
     this.firstSchedTime = firstSchedTime;
+    this.lastSchedTime = lastSchedTime;
     this.timezone = timezone;
     this.lastModifyTime = lastModifyTime;
     this.period = period;
@@ -123,7 +125,9 @@ public class Schedule {
         + " to be run at (starting) "
         + new DateTime(firstSchedTime).toDateTimeISO()
         + " with recurring period of "
-        + (period == null ? "non-recurring" : createPeriodString(period));
+        + (period == null ? "non-recurring" : createPeriodString(period))
+        + " ending at "
+        + new DateTime(lastSchedTime).toDateTimeISO();
   }
 
   public Pair<Integer, String> getScheduleIdentityPair() {
@@ -154,6 +158,10 @@ public class Schedule {
     return firstSchedTime;
   }
 
+  public long getLastSchedTime() {
+	return lastSchedTime;
+  }
+  
   public DateTimeZone getTimezone() {
     return timezone;
   }
