@@ -80,6 +80,7 @@
                 <th class="date">First Scheduled to Run</th>
                 <th class="date">Next Execution Time</th>
                 <th class="date">Repeats Every</th>
+                <th class="date">Stop Running On</th>
                 <th>Has SLA</th>
                 <th colspan="2" class="action ignoresort">Action</th>
               </tr>
@@ -102,6 +103,7 @@
                 <td>$utils.formatDateTime(${sched.firstSchedTime})</td>
                 <td>$utils.formatDateTime(${sched.nextExecTime})</td>
                 <td>$utils.formatPeriod(${sched.period})</td>
+                <td>$utils.formatDateTime(${sched.lastSchedTime})</td>
                 <td>#if(${sched.slaOptions}) true #else false #end</td>
                 <td><button type="button" id="removeSchedBtn" class="btn btn-sm btn-danger" onclick="removeSched(${sched.scheduleId})" >Remove Schedule</button></td>
                 <td><button type="button" id="addSlaBtn" class="btn btn-sm btn-primary" onclick="slaView.initFromSched(${sched.scheduleId}, '${sched.flowName}')" >Set SLA</button></td>
