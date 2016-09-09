@@ -32,7 +32,7 @@
                 <div class="form-group">
                   <label class="col-sm-2 control-label">Time</label>
                   <div class="col-sm-3">
-                    <input type="text" id="timepicker" class="form-control">
+                    <input type="text" id="timepicker" class="form-control" readonly>
                   </div>
                   <div class="col-sm-4">
                     <select id="timezone" class="form-control">
@@ -44,7 +44,7 @@
                 <div class="form-group">
                   <label class="col-sm-2 control-label">Date</label>
                   <div class="col-sm-3">
-                    <input type="text" id="datepicker" class="form-control">
+                    <input type="text" id="datepicker" class="form-control" readonly>
                   </div>
                 </div>
                 
@@ -89,7 +89,7 @@
                 <div class="form-group">                
                   <label class="col-sm-2 control-label">Time</label>
                   <div class="col-sm-3">
-                    <input type="text" id="stoptimepicker" class="form-control">
+                    <input type="text" id="stoptimepicker" class="form-control" readonly>
                   </div>
                   <div class="col-sm-4">
                     <select id="stoptimezone" class="form-control">
@@ -101,7 +101,7 @@
                 <div class="form-group">
                   <label class="col-sm-2 control-label">Date</label>
                   <div class="col-sm-3">
-                    <input type="text" id="stopdatepicker" class="form-control">
+                    <input type="text" id="stopdatepicker" class="form-control" readonly>
                   </div>
                 </div>
                 
