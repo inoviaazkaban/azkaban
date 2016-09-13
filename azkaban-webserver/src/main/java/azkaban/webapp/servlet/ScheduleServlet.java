@@ -642,9 +642,15 @@ public class ScheduleServlet extends LoginAbstractAzkabanServlet {
     try {
       firstSchedTime = parseDateTime(scheduleDate, scheduleTime);
     } catch (Exception e) {
-      ret.put("error", "Invalid date and/or time '" + scheduleDate + " "
-          + scheduleTime);
+      ret.put("error", "Invalid start date and/or time '" + scheduleDate + " "
+          + scheduleTime+"'");
       return;
+    }
+    
+    if(firstSchedTime.getMillis()<System.currentTimeMillis()) {
+      ret.put("error", "Start date/time '" + scheduleDate + " "
+		          + scheduleTime+"' is in the past");
+	  return;
     }
 
     ReadablePeriod thePeriod = null;
@@ -653,12 +659,15 @@ public class ScheduleServlet extends LoginAbstractAzkabanServlet {
           && getParam(req, "is_recurring").equals("on")) {
         thePeriod = Schedule.parsePeriodString(getParam(req, "period"));
       }
-    } catch (Exception e) {
+    } catch (NumberFormatException nfe) {
+        ret.put("error", "Invalid period of recurrance");
+    }
+    catch (Exception e) {
       ret.put("error", e.getMessage());
     }
     
     String stopScheduleTime = null, stopScheduleDate = null;
-    DateTime lastSchedTime = parseDateTime("12/31/2100","12,59,PM,+02:00");
+    DateTime lastSchedTime = parseDateTime("12/31/2100","11,59,PM,+02:00");
     if (hasParam(req, "doesStop")
 	            && getParam(req, "doesStop").equals("on")) {
     	stopScheduleTime = getParam(req, "stopScheduleTime");
@@ -666,10 +675,15 @@ public class ScheduleServlet extends LoginAbstractAzkabanServlet {
 	    try {
 	    	lastSchedTime = parseDateTime(stopScheduleDate, stopScheduleTime);
 	    } catch (Exception e) {
-	      ret.put("error", "Invalid date and/or time '" + stopScheduleDate + " "
+	      ret.put("error", "Invalid stop date and/or time '" + stopScheduleDate + " "
 	          + stopScheduleTime);
 	      return;
 	    }
+	    
+	    if(lastSchedTime.getMillis()<firstSchedTime.getMillis()) {
+	        ret.put("error", "End date/time should occur after start date/time");
+	  	  return;
+	      }
 	}
     
     ExecutionOptions flowOptions = null;
@@ -700,30 +714,20 @@ public class ScheduleServlet extends LoginAbstractAzkabanServlet {
   }
 
   private DateTime parseDateTime(String scheduleDate, String scheduleTime) {
-    // scheduleTime: 12,00,pm,PDT
     String[] parts = scheduleTime.split(",", -1);
     int hour = Integer.parseInt(parts[0]);
     int minutes = Integer.parseInt(parts[1]);
-		// Inovia 24 hour clock mod
-		// boolean isPm = parts[2].equalsIgnoreCase("pm");
+	boolean isPm = parts[2].equalsIgnoreCase("pm");
 
     DateTimeZone timezone =
         parts[3].equals("UTC") ? DateTimeZone.UTC : DateTimeZone.getDefault();
 
-    // scheduleDate: 02/10/2013
-    DateTime day = null;
-    if (scheduleDate == null || scheduleDate.trim().length() == 0) {
-      day = new LocalDateTime().toDateTime();
-    } else {
-      day = DateTimeFormat.forPattern("MM/dd/yyyy")
-          .withZone(timezone).parseDateTime(scheduleDate);
-    }
+    DateTime day = DateTimeFormat.forPattern("MM/dd/yyyy")
+            .withZone(timezone).parseDateTime(scheduleDate);
 
-		// Inovia mod 24 hour clock
-		// hour %= 12;
-
-		// if(isPm)
-		// hour += 12;
+	if(isPm) {
+	  hour += 12;
+	}
 
     DateTime firstSchedTime =
         day.withHourOfDay(hour).withMinuteOfHour(minutes).withSecondOfMinute(0);

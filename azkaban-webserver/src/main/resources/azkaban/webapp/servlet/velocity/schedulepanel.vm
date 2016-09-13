@@ -32,10 +32,10 @@
                 <div class="form-group">
                   <label class="col-sm-2 control-label">Time</label>
                   <div class="col-sm-3">
-                    <input type="text" id="timepicker" class="form-control" readonly>
+                    <input type="text" id="timepicker" class="form-control">
                   </div>
                   <div class="col-sm-4">
-                    <select id="timezone" class="form-control" readonly>
+                    <select id="timezone" class="form-control">
                       <option>${timezone}</option>
                       <option>UTC</option>
                     </select>
@@ -44,7 +44,7 @@
                 <div class="form-group">
                   <label class="col-sm-2 control-label">Date</label>
                   <div class="col-sm-3">
-                    <input type="text" id="datepicker" class="form-control" readonly>
+                    <input type="text" id="datepicker" class="form-control">
                   </div>
                 </div>
                 
@@ -62,10 +62,10 @@
                 <div class="form-group">
                   <label class="col-sm-2 control-label">Repeat-every</label>
                   <div class="col-sm-3">
-                    <input id="period" type="text" size="2" value="1" class="form-control">
+                    <input id="period" type="text" size="2" value="1" class="form-control" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
                   </div>
                   <div class="col-sm-4">
-                    <select id="period_units" class="form-control" readonly>
+                    <select id="period_units" class="form-control">
                       <option value="d">Days</option>
                       <option value="h">Hours</option>
                       <option value="m">Minutes</option>
@@ -89,10 +89,10 @@
                 <div class="form-group">                
                   <label class="col-sm-2 control-label">Time</label>
                   <div class="col-sm-3">
-                    <input type="text" id="stoptimepicker" class="form-control" readonly>
+                    <input type="text" id="stoptimepicker" class="form-control">
                   </div>
                   <div class="col-sm-4">
-                    <select id="stoptimezone" class="form-control" readonly>
+                    <select id="stoptimezone" class="form-control">
                       <option>${timezone}</option>
                       <option>UTC</option>
                     </select>
@@ -101,7 +101,7 @@
                 <div class="form-group">
                   <label class="col-sm-2 control-label">Date</label>
                   <div class="col-sm-3">
-                    <input type="text" id="stopdatepicker" class="form-control" readonly>
+                    <input type="text" id="stopdatepicker" class="form-control">
                   </div>
                 </div>
                 
