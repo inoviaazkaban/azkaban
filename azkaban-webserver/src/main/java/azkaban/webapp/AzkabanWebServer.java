@@ -57,6 +57,7 @@ import org.mortbay.thread.QueuedThreadPool;
 import azkaban.alert.Alerter;
 import azkaban.database.AzkabanDatabaseSetup;
 import azkaban.executor.ExecutorManager;
+import azkaban.executor.ExecutorManagerException;
 import azkaban.executor.JdbcExecutorLoader;
 import azkaban.jmx.JmxExecutorManager;
 import azkaban.jmx.JmxJettyServer;
@@ -757,7 +758,22 @@ public class AzkabanWebServer extends AzkabanServer {
         System.exit(-1);
       }
     }
-
+    
+    try {
+    	JdbcExecutorLoader jdbcExecutorLoader = new JdbcExecutorLoader(azkabanSettings);
+    	jdbcExecutorLoader.updateExecutableJobsOnStartUp();
+    } 
+    catch(ExecutorManagerException e) {
+		logger.warn("There could be some jobs KILLED by this server restart event,"
+				+ "but their status still erroneously being shown as RUNNING."
+				+ "Please run the SQL "
+				+ "[update execution_jobs join execution_flows"
+				+ " on execution_jobs.exec_id = execution_flows.exec_id"
+				+ " set execution_jobs.status = 70 where"
+				+ " execution_jobs.status = 30 and execution_flows.status = 70]"
+				+ "on the database to rectify their status", e);
+    }
+    
     QueuedThreadPool httpThreadPool = new QueuedThreadPool(maxThreads);
     server.setThreadPool(httpThreadPool);
 

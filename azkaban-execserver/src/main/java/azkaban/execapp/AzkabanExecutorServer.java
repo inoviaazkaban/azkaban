@@ -49,6 +49,7 @@ import azkaban.execapp.metric.NumQueuedFlowMetric;
 import azkaban.execapp.metric.NumRunningFlowMetric;
 import azkaban.execapp.metric.NumRunningJobMetric;
 import azkaban.executor.ExecutorLoader;
+import azkaban.executor.ExecutorManagerException;
 import azkaban.executor.JdbcExecutorLoader;
 import azkaban.jmx.JmxJettyServer;
 import azkaban.metric.IMetricEmitter;
@@ -326,6 +327,21 @@ public class AzkabanExecutorServer {
       DateTimeZone.setDefault(DateTimeZone.forID(timezone));
 
       logger.info("Setting timezone to " + timezone);
+    }
+    
+    try {
+    	JdbcExecutorLoader jdbcExecutorLoader = new JdbcExecutorLoader(azkabanSettings);
+    	jdbcExecutorLoader.updateExecutableJobsOnStartUp();
+    } 
+    catch(ExecutorManagerException e) {
+		logger.warn("There could be some jobs KILLED by this server restart event,"
+				+ "but their status still erroneously being shown as RUNNING."
+				+ "Please run the SQL "
+				+ "[update execution_jobs join execution_flows"
+				+ " on execution_jobs.exec_id = execution_flows.exec_id"
+				+ " set execution_jobs.status = 70 where"
+				+ " execution_jobs.status = 30 and execution_flows.status = 70]"
+				+ "on the database to rectify their status", e);
     }
 
     app = new AzkabanExecutorServer(azkabanSettings);

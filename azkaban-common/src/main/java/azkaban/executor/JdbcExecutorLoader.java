@@ -512,6 +512,22 @@ public class JdbcExecutorLoader extends AbstractJdbcLoader implements
           e);
     }
   }
+  
+  public void updateExecutableJobsOnStartUp()
+      throws ExecutorManagerException {
+    final String UPDATE_EXECUTION_JOBS =
+        "update execution_jobs join execution_flows on"
+        + " execution_jobs.exec_id = execution_flows.exec_id "
+        + "set execution_jobs.status = 70 where "
+        + "execution_jobs.status = 30 and execution_flows.status = 70";
+
+    QueryRunner runner = createQueryRunner();
+    try {
+      runner.update(UPDATE_EXECUTION_JOBS);
+    } catch (SQLException e) {
+      throw new ExecutorManagerException("Error updating jobs ",e);
+    }
+  }
 
   @Override
   public List<ExecutableJobInfo> fetchJobInfoAttempts(int execId, String jobId)
@@ -1582,4 +1598,4 @@ public class JdbcExecutorLoader extends AbstractJdbcLoader implements
         + executionId, e);
     }
   }
-}
+ }
