@@ -333,7 +333,7 @@ public class AzkabanExecutorServer {
     	JdbcExecutorLoader jdbcExecutorLoader = new JdbcExecutorLoader(azkabanSettings);
     	jdbcExecutorLoader.updateExecutableJobsOnStartUp();
     } 
-    catch(ExecutorManagerException e) {
+    catch(Exception e) {
 		logger.warn("There could be some jobs KILLED by this server restart event,"
 				+ "but their status still erroneously being shown as RUNNING."
 				+ "Please run the SQL "
